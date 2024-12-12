@@ -14,19 +14,18 @@ model User {
   email    String @unique
   password String
 
-  role UserRole @default(USER)
-  verifed DateTime
+  role    UserRole @default(USER)
+  verified DateTime?
 
-
-  provider String?
+  provider   String?
   providerId String?
 
-  cart  Cart?
-  order Order[]
+  cart             Cart?
+  order            Order[]
   verificationCode VerificationCode?
 
-  crateAt          DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  crateAt   DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
@@ -79,17 +78,17 @@ model Ingredient {
 }
 
 model Cart {
-  id     Int   @id @default(autoincrement())
-  
+  id Int @id @default(autoincrement())
+
   user   User? @relation(fields: [userId], references: [id])
-  userId Int? @unique
+  userId Int?  @unique
 
   items CartItem[]
 
   token String
 
   totalAmount Int @default(0)
-  
+
   crateAt   DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -114,12 +113,11 @@ model Order {
   id Int @id @default(autoincrement())
 
   user   User? @relation(fields: [userId], references: [id])
-  userId Int
+  userId Int?
 
   token String
 
   totalAmount Int
-
   status    OrderStatus
   paymentId String?
 
@@ -139,12 +137,33 @@ model VerificationCode {
   id Int @id @default(autoincrement())
 
   user   User? @relation(fields: [userId], references: [id])
-  userId Int @unique
+  userId Int   @unique
 
   code String @unique
 
   crateAt DateTime @default(now())
+
   @@unique([userId, code])
+}
+
+model Story {
+  id              Int    @id @default(autoincrement())
+  previewImageUrl String
+
+  items StoryItem[]
+
+  createdAt DateTime @default(now())
+}
+
+model StoryItem {
+  id Int @id @default(autoincrement())
+
+  storyId Int
+  story   Story @relation(fields: [storyId], references: [id])
+
+  sourceUrl String
+
+  createdAt DateTime @default(now())
 }
 
 enum OrderStatus {
@@ -152,7 +171,6 @@ enum OrderStatus {
   SUCCEEDED
   CANCELLED
 }
-
 
 enum UserRole {
   USER
